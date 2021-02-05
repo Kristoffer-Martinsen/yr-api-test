@@ -56,13 +56,13 @@ table {
 	border-width: 1px;
 }
 
-.temp {
+.temps {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
 }
 
-.temp h3 {
+.temps h3 {
 	padding-left: 1em;
 }
 
@@ -75,7 +75,7 @@ table {
 	min-width: 8em;
 }
 
-.temps {
+.temp {
 	margin-right: 1em;
 	padding-right: 0.5em;
 	min-width: 4em;

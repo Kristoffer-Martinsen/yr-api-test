@@ -9,29 +9,31 @@ async function getWeatherData() {
 
 async function showData() {
     const weather = await getWeatherData();
-    let currentDay = convertStringToDate(weather[0].time).date;
-    let temps = [];
+    let currentDay = convertStringToDate(weather[0].time);
+    let temps = {}; 
 
+    // Check if the hours are added correctly and that it doesnt skip midnight
     for (let i = 0; i < weather.length; i++) {
         const tempApiCall = weather[i].data.instant.details.air_temperature;
         let dateObject = convertStringToDate(weather[i].time);
-        if(dateObject.date == currentDay) {
-            temps.push(tempApiCall);
+        if(dateObject.date == currentDay.date) {
+            temps[dateObject.hour] = tempApiCall;
         } else {
+            // Midnight temp need to be added here
+            temps[dateObject.hour] = tempApiCall; // not quite what what I had in mind...
             createWeatherDiv(
-                "dateID" + dateObject.date, 
-                dateObject.date,
-                dateObject.month, 
-                dateObject.day, 
-                dateObject.hour,
+                "dateID" + currentDay.date, 
+                currentDay.date,
+                currentDay.month, 
+                currentDay.day,
                 temps );
-            temps = [];
-            currentDay = dateObject.date;
+            temps = {};
+            currentDay = dateObject;
         }
     }
 }
 
-function createWeatherDiv(id, date, month, day, hour, temp) {
+function createWeatherDiv(id, date, month, day, temp) {
     const weatherDivTemplate = 
         `<div class="weather">
             <div class="date">
@@ -44,7 +46,7 @@ function createWeatherDiv(id, date, month, day, hour, temp) {
                     ${day}
                 </h3>
             </div>
-            <div class="temp" id=${id}>
+            <div class="temps" id=${id}>
                 <!-- Temperatures for the day -->
             </div>
         </div>`;
@@ -54,13 +56,22 @@ function createWeatherDiv(id, date, month, day, hour, temp) {
 
     // Add themperatures to each day
     const temperatureDiv = document.getElementById(id);
-    temp.forEach(element => {
-        const temperature = document.createElement('div');
-        temperature.innerHTML = element + "°C";
-        temperature.className = "temps";
-        temperatureDiv.appendChild(temperature);
-    });
+    for(const [key, value] of Object.entries(temp)) {
+        const tempDivTemplate = 
+        `<div class="temp">
+            <div>
+                <h3>${key + ":00"}</h3>
+            </div>
+            <div>
+                <p>${value + "°C"}</p>
+            </div>
+        </div>
+        `;
+    const temperature = document.createElement('div');
+    temperature.innerHTML = tempDivTemplate;
+    temperatureDiv.appendChild(temperature);
 
+    }
 }
 
 
