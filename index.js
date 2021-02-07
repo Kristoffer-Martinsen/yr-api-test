@@ -16,11 +16,10 @@ async function showData() {
     for (let i = 0; i < weather.length; i++) {
         const tempApiCall = weather[i].data.instant.details.air_temperature;
         let dateObject = convertStringToDate(weather[i].time);
-        if(dateObject.date == currentDay.date) {
+        
+        if(dateObject.date == currentDay.date || dateObject.hour == 0) {
             temps[dateObject.hour] = tempApiCall;
         } else {
-            // Midnight temp need to be added here
-            temps[dateObject.hour] = tempApiCall; // not quite what what I had in mind...
             createWeatherDiv(
                 "dateID" + currentDay.date, 
                 currentDay.date,
@@ -33,6 +32,7 @@ async function showData() {
     }
 }
 
+// Creates a new div for each new day
 function createWeatherDiv(id, date, month, day, temp) {
     const weatherDivTemplate = 
         `<div class="weather">
@@ -54,7 +54,7 @@ function createWeatherDiv(id, date, month, day, temp) {
     weatherDiv.innerHTML = weatherDivTemplate;
     body.appendChild(weatherDiv);
 
-    // Add themperatures to each day
+    // Add the dict of themperatures to each day
     const temperatureDiv = document.getElementById(id);
     for(const [key, value] of Object.entries(temp)) {
         const tempDivTemplate = 
